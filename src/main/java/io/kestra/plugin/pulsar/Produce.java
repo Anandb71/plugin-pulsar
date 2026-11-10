@@ -123,7 +123,7 @@ public class Produce extends AbstractPulsarConnection implements RunnableTask<Pr
 
     @Schema(
         title = "Public encryption key",
-        description = "PEM-encoded key used to encrypt the data key for message payload encryption."
+        description = "PEM-encoded RSA public key used to encrypt message payloads. Consumers need the corresponding private key to decrypt messages."
     )
     @PluginProperty(group = "connection")
     private Property<String> encryptionKey;

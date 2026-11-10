@@ -77,7 +77,11 @@ public abstract class AbstractProducer<T> {
         }
 
         if (encryptionKey != null) {
-            this.producerBuilder.addEncryptionKey(this.runContext.render(encryptionKey));
+            String renderedKey = this.runContext.render(encryptionKey);
+            String keyName = "kestra-encryption-key";
+            PemCryptoKeyReader cryptoKeyReader = new PemCryptoKeyReader(renderedKey, null, keyName);
+            this.producerBuilder.cryptoKeyReader(cryptoKeyReader);
+            this.producerBuilder.addEncryptionKey(keyName);
         }
 
         if (compressionType != null) {
