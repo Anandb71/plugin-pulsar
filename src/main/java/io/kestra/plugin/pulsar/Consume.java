@@ -67,6 +67,10 @@ public class Consume extends AbstractReader implements RunnableTask<AbstractRead
     @PluginProperty(group = "advanced")
     private Property<Map<String, String>> consumerProperties;
 
+    @Schema(
+        title = "Private decryption key",
+        description = "PEM-encoded RSA private key used to decrypt messages encrypted with the corresponding public key."
+    )
     @PluginProperty(group = "connection")
     private Property<String> encryptionKey;
 
@@ -148,7 +152,10 @@ public class Consume extends AbstractReader implements RunnableTask<AbstractRead
         }
 
         if (this.encryptionKey != null) {
-            consumerBuilder.defaultCryptoKeyReader(runContext.render(this.encryptionKey).as(String.class).orElseThrow());
+            String renderedKey = runContext.render(this.encryptionKey).as(String.class).orElseThrow();
+            String keyName = "kestra-encryption-key";
+            PemCryptoKeyReader cryptoKeyReader = new PemCryptoKeyReader(null, renderedKey, keyName);
+            consumerBuilder.cryptoKeyReader(cryptoKeyReader);
         }
         return consumerBuilder;
     }
